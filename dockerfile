@@ -1,9 +1,18 @@
-FROM mcr.microsoft.com/dotnet/framework/sdk:4.8 AS build
+# Build stage
+FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 WORKDIR /app
-COPY . .
-RUN msbuild BorderlessGaming.sln /p:Configuration=Release /p:OutputPath=out
 
-FROM mcr.microsoft.com/dotnet/framework/runtime:4.8
+# Copy solution and restore dependencies
+COPY BorderlessGaming.sln ./
+COPY BorderlessGaming/ ./BorderlessGaming/
+RUN dotnet restore
+
+# Build the app
+RUN dotnet publish BorderlessGaming.sln -c Release -o out
+
+# Runtime stage
+FROM mcr.microsoft.com/dotnet/runtime:6.0
 WORKDIR /app
 COPY --from=build /app/out .
-ENTRYPOINT ["BorderlessGaming.exe"]
+ENTRYPOINT ["dotnet", "BorderlessGaming.dll"]
+
