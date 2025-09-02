@@ -3,10 +3,9 @@ pipeline {
 
     stages {
         stage('Checkout') {
-            steps {
+    
                 git 'https://github.com/seshuadi969/Borderless-Gaming.git'
             }
-        }
 
         stage('Build Docker Image') {
             steps {
