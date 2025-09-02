@@ -1,11 +1,9 @@
-# Build stage
-FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
+FROM mcr.microsoft.com/dotnet/framework/sdk:4.8 AS build
 WORKDIR /app
 COPY . .
-RUN dotnet publish -c Release -o out
+RUN msbuild BorderlessGaming.sln /p:Configuration=Release /p:OutputPath=out
 
-# Runtime stage
-FROM mcr.microsoft.com/dotnet/aspnet:6.0
+FROM mcr.microsoft.com/dotnet/framework/runtime:4.8
 WORKDIR /app
 COPY --from=build /app/out .
-ENTRYPOINT ["dotnet", "YourApp.dll"]
+ENTRYPOINT ["BorderlessGaming.exe"]
