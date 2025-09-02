@@ -1,18 +1,24 @@
-# Use Node.js image
-FROM node:18-alpine
 
-# Set working directory
-WORKDIR /app
+# Use official .NET SDK image for build
+FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
+WORKDIR /src
 
-# Copy package.json and install dependencies
-COPY package*.json ./
-RUN npm install
-
-# Copy the rest of the project
+# Copy everything
 COPY . .
 
-# Expose port (change if needed)
-EXPOSE 3000
+# Restore dependencies
+RUN dotnet restore
 
-# Start the app
-CMD ["npm", "start"]
+# Build app
+RUN dotnet publish -c Release -o /app
+
+# Runtime image
+FROM mcr.microsoft.com/dotnet/aspnet:6.0
+WORKDIR /app
+COPY --from=build /app .
+
+# Expose port (adjust if needed)
+EXPOSE 5000
+
+# Run the app
+ENTRYPOINT ["dotnet", "Borderless-Gaming.dll"]
