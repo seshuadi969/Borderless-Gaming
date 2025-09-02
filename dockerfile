@@ -1,11 +1,12 @@
-# Use Windows .NET Framework SDK to build
+
+# Use Microsoft .NET Framework SDK image
 FROM mcr.microsoft.com/dotnet/framework/sdk:4.8 AS build
 WORKDIR /src
 COPY . .
-RUN msbuild BorderlessGaming.sln /p:Configuration=Release /p:OutputPath=C:\out
+RUN msbuild BorderlessGaming/BorderlessGaming.csproj /p:Configuration=Release /p:OutputPath=c:\app
 
-# Use Windows .NET Framework runtime
+# Runtime image
 FROM mcr.microsoft.com/dotnet/framework/runtime:4.8
 WORKDIR /app
-COPY --from=build C:\out .
+COPY --from=build C:\app .
 ENTRYPOINT ["BorderlessGaming.exe"]
